@@ -1,0 +1,19 @@
+{
+  "name": "azure-function-hello-world",
+  "version": "1.0.0",
+  "description": "Hello World Azure Function with CI/CD pipeline",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start",
+    "test": "jest",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.x",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  }
+} 
