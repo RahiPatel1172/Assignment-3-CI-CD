@@ -17,6 +17,7 @@ pipeline {
                     source venv/bin/activate
                     
                     # Install dependencies
+                    cd src/FunctionApp
                     pip install -r requirements.txt
                 '''
             }
@@ -26,6 +27,7 @@ pipeline {
             steps {
                 sh '''
                     source venv/bin/activate
+                    cd src/FunctionApp
                     python -m pytest test_function.py -v
                 '''
             }
@@ -45,7 +47,8 @@ pipeline {
                         az account set --subscription $AZURE_SUBSCRIPTION_ID
                         
                         # Create deployment package
-                        zip -r functionapp.zip . -x "*.git*" "*.pyc" "__pycache__" "*.pyo" "*.pyd" "*.so" "*.dylib" "*.dll" "*.exe" "*.egg" "*.egg-info" "*.dist-info" "venv/*"
+                        cd src/FunctionApp
+                        zip -r ../functionapp.zip . -x "*.git*" "*.pyc" "__pycache__" "*.pyo" "*.pyd" "*.so" "*.dylib" "*.dll" "*.exe" "*.egg" "*.egg-info" "*.dist-info" "venv/*"
                         
                         # Deploy to Azure
                         az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP_NAME --src functionapp.zip
