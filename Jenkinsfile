@@ -43,25 +43,8 @@ pipeline {
                     string(credentialsId: 'AZURE_SUBSCRIPTION_ID', variable: 'AZURE_SUBSCRIPTION_ID')
                 ]) {
                     sh '''
-                        # Verify Azure CLI is available
-                        if ! command -v /opt/homebrew/bin/az &> /dev/null; then
-                            echo "❌ Azure CLI is not installed. Please install it manually."
-                            exit 1
-                        fi
-                        
-                        # Login to Azure
-                        /opt/homebrew/bin/az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-                        /opt/homebrew/bin/az account set --subscription $AZURE_SUBSCRIPTION_ID
-                        
-                        # Create deployment package
-                        cd src/FunctionApp
-                        zip -r ../functionapp.zip . -x "*.git*" "*.pyc" "__pycache__" "*.pyo" "*.pyd" "*.so" "*.dylib" "*.dll" "*.exe" "*.egg" "*.egg-info" "*.dist-info" "venv/*"
-                        
-                        # Deploy to Azure
-                        /opt/homebrew/bin/az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP_NAME --src functionapp.zip
-                        
-                        # Clean up
-                        rm functionapp.zip
+                        # Run the deployment script
+                        ./deploy.sh
                     '''
                 }
             }
