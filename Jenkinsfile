@@ -48,10 +48,10 @@ pipeline {
     
     post {
         success {
-            echo '✅ Pipeline completed successfully'
+            echo 'Pipeline completed successfully'
         }
         failure {
-            echo '❌ Pipeline failed. Please check the logs for details.'
+            echo 'Pipeline failed. Please check the logs for details.'
         }
         always {
             echo 'Cleaning up workspace'
