@@ -5,7 +5,6 @@ pipeline {
         PYTHON_VERSION = '3.9'
         RESOURCE_GROUP = 'Assignment-3-CI-CD'
         FUNCTION_APP_NAME = 'assignment3cicd'
-        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
     }
     
     stages {
@@ -13,11 +12,8 @@ pipeline {
             steps {
                 echo 'Setting up Python environment and installing dependencies'
                 sh '''
-                    # Create and activate virtual environment
                     python3 -m venv venv
                     source venv/bin/activate
-                    
-                    # Install dependencies
                     cd src/FunctionApp
                     pip install -r requirements.txt
                 '''
@@ -43,15 +39,7 @@ pipeline {
                     string(credentialsId: 'AZURE_SUBSCRIPTION_ID', variable: 'AZURE_SUBSCRIPTION_ID')
                 ]) {
                     sh '''
-                        # Print current directory and user for debugging
-                        echo "Current directory: $(pwd)"
-                        echo "Current user: $(whoami)"
-                        
-                        # Make sure curl is available
-                        which curl || echo "curl not found"
-                        
-                        # Run the alternative deployment script
-                        ./deploy_alt.sh
+                        ./deploy.sh
                     '''
                 }
             }
@@ -59,12 +47,15 @@ pipeline {
     }
     
     post {
-        always {
-            echo 'Pipeline execution completed'
-            cleanWs()
+        success {
+            echo '✅ Pipeline completed successfully'
         }
         failure {
-            echo '❌ Deployment failed. Please check the logs for details.'
+            echo '❌ Pipeline failed. Please check the logs for details.'
+        }
+        always {
+            echo 'Cleaning up workspace'
+            cleanWs()
         }
     }
 } 
