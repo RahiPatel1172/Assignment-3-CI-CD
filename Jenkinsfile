@@ -43,18 +43,15 @@ pipeline {
                     string(credentialsId: 'AZURE_SUBSCRIPTION_ID', variable: 'AZURE_SUBSCRIPTION_ID')
                 ]) {
                     sh '''
-                        # Verify the script exists and is executable
-                        ls -la deploy.sh
-                        
                         # Print current directory and user for debugging
                         echo "Current directory: $(pwd)"
                         echo "Current user: $(whoami)"
                         
-                        # Make sure the script is executable
-                        chmod +x deploy.sh
+                        # Make sure curl is available
+                        which curl || echo "curl not found"
                         
-                        # Run the deployment script
-                        ./deploy.sh
+                        # Run the alternative deployment script
+                        ./deploy_alt.sh
                     '''
                 }
             }
