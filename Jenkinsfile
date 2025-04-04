@@ -5,6 +5,7 @@ pipeline {
         PYTHON_VERSION = '3.9'
         RESOURCE_GROUP = 'Assignment-3-CI-CD'
         FUNCTION_APP_NAME = 'assignment3cicd'
+        PATH = "/opt/homebrew/bin:$PATH"
     }
     
     stages {
@@ -42,16 +43,22 @@ pipeline {
                     string(credentialsId: 'AZURE_SUBSCRIPTION_ID', variable: 'AZURE_SUBSCRIPTION_ID')
                 ]) {
                     sh '''
+                        # Verify Azure CLI is available
+                        if ! command -v /opt/homebrew/bin/az &> /dev/null; then
+                            echo "❌ Azure CLI is not installed. Please install it manually."
+                            exit 1
+                        fi
+                        
                         # Login to Azure
-                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-                        az account set --subscription $AZURE_SUBSCRIPTION_ID
+                        /opt/homebrew/bin/az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+                        /opt/homebrew/bin/az account set --subscription $AZURE_SUBSCRIPTION_ID
                         
                         # Create deployment package
                         cd src/FunctionApp
                         zip -r ../functionapp.zip . -x "*.git*" "*.pyc" "__pycache__" "*.pyo" "*.pyd" "*.so" "*.dylib" "*.dll" "*.exe" "*.egg" "*.egg-info" "*.dist-info" "venv/*"
                         
                         # Deploy to Azure
-                        az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP_NAME --src functionapp.zip
+                        /opt/homebrew/bin/az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP_NAME --src functionapp.zip
                         
                         # Clean up
                         rm functionapp.zip
