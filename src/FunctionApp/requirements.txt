@@ -1,0 +1,4 @@
+azure-functions
+pytest
+python-dateutil
+requests 
